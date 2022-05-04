@@ -44,5 +44,12 @@ namespace WebApi.Controllers
             var response = this.employeeService.GetOne(id);
             return await Task.FromResult(new JsonResult(response));
         }
+    
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync(Employee entity)
+        {
+            var response = this.employeeService.Add(entity);
+            return await Task.FromResult(new JsonResult(response));
+        }
     }
 }

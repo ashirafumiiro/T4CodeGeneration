@@ -44,5 +44,12 @@ namespace WebApi.Controllers
             var response = this.auditEntryService.GetOne(id);
             return await Task.FromResult(new JsonResult(response));
         }
+    
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync(AuditEntry entity)
+        {
+            var response = this.auditEntryService.Add(entity);
+            return await Task.FromResult(new JsonResult(response));
+        }
     }
 }

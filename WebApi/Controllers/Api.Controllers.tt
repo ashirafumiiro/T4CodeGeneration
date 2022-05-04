@@ -74,109 +74,13 @@ using Microsoft.AspNetCore.Mvc;
         var response = this.<#=code.Escape(entity).Camelize()#>Service.GetOne(id);
         return await Task.FromResult(new JsonResult(response));
     }
-}
-<#
-    EndNamespace(code);
-}
 
-foreach (var complex in typeMapper.GetItemsToGenerate<ComplexType>(itemCollection))
-{
-    fileManager.StartNewFile(complex.Name + ".cs");
-    BeginNamespace(code);
-#>
-<#=codeStringGenerator.UsingDirectives(inHeader: false, includeCollections: false)#>
-<#=Accessibility.ForType(complex)#> partial class <#=code.Escape(complex)#>
-{
-<#
-    var complexProperties = typeMapper.GetComplexProperties(complex);
-    var propertiesWithDefaultValues = typeMapper.GetPropertiesWithDefaultValues(complex);
-
-    if (propertiesWithDefaultValues.Any() || complexProperties.Any())
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync(<#=code.Escape(entity)#> entity)
     {
-#>
-    public <#=code.Escape(complex)#>()
-    {
-<#
-        foreach (var edmProperty in propertiesWithDefaultValues)
-        {
-#>
-        this.<#=code.Escape(edmProperty)#> = <#=typeMapper.CreateLiteral(edmProperty.DefaultValue)#>;
-<#
-        }
-
-        foreach (var complexProperty in complexProperties)
-        {
-#>
-        this.<#=code.Escape(complexProperty)#> = new <#=typeMapper.GetTypeName(complexProperty.TypeUsage)#>();
-<#
-        }
-#>
+        var response = this.<#=code.Escape(entity).Camelize()#>Service.Add(entity);
+        return await Task.FromResult(new JsonResult(response));
     }
-
-<#
-    }
-
-    var simpleProperties = typeMapper.GetSimpleProperties(complex);
-    if (simpleProperties.Any())
-    {
-        foreach(var edmProperty in simpleProperties)
-        {
-#>
-    <#=codeStringGenerator.Property(edmProperty)#>
-<#
-        }
-    }
-
-    if (complexProperties.Any())
-    {
-#>
-
-<#
-        foreach(var edmProperty in complexProperties)
-        {
-#>
-    <#=codeStringGenerator.Property(edmProperty)#>
-<#
-        }
-    }
-#>
-}
-<#
-    EndNamespace(code);
-}
-
-foreach (var enumType in typeMapper.GetEnumItemsToGenerate(itemCollection))
-{
-    fileManager.StartNewFile(enumType.Name + ".cs");
-    BeginNamespace(code);
-#>
-<#=codeStringGenerator.UsingDirectives(inHeader: false, includeCollections: false)#>
-<#
-    if (typeMapper.EnumIsFlags(enumType))
-    {
-#>
-[Flags]
-<#
-    }
-#>
-<#=codeStringGenerator.EnumOpening(enumType)#>
-{
-<#
-    var foundOne = false;
-    
-    foreach (MetadataItem member in typeMapper.GetEnumMembers(enumType))
-    {
-        foundOne = true;
-#>
-    <#=code.Escape(typeMapper.GetEnumMemberName(member))#> = <#=typeMapper.GetEnumMemberValue(member)#>,
-<#
-    }
-
-    if (foundOne)
-    {
-        this.GenerationEnvironment.Remove(this.GenerationEnvironment.Length - 3, 1);
-    }
-#>
 }
 <#
     EndNamespace(code);

@@ -26,6 +26,7 @@ namespace DataAccess.Repository
         public T Add(T entity)
         {
             _table.Add(entity);
+            SaveChanges();
             return entity;
         }
 
